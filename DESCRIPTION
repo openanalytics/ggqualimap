@@ -1,5 +1,5 @@
 Package: ggqualimap
-Title: Plots from Statistics Collected by Qualimap in RNASeq Data
+Title: Plots of Statistics Collected by Qualimap from RNASeq Data
 Version: 0.1.0
 Author: Arunkumar Srinivasan <asrinivasan@openanalytics.eu>
 Maintainer: Arunkumar Srinivasan <asrinivasan@openanalytics.eu>
