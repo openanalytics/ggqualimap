@@ -6,14 +6,17 @@
 #' 
 #' @seealso \code{\link{root_node}}, \code{\link{child_node}}, \code{\link{html_table}}, \code{\link{qualimap_tables}}, \code{\link{tidy}}, \code{\link{extract_coverage_stats}}, , \code{\link{extract_summary_tables}}
 #' @param dir Complete path to Qualimap reports for all samples from an experiment
+#' @param groups Default is \code{NULL}. If the plots need to be grouped by samples, then a two 
+#' column \code{data.table} has to be provided with names \code{sample} and \code{group}. The 
+#' column \code{group} should have identical values for all samples belonging to the same group.
 #' @export
-qualimap <- function(dir) {
+qualimap <- function(dir, groups=NULL) {
 
 	summary_files  = list.files(dir, pattern="qualimapReport.html$", full.names=TRUE, recursive=TRUE)
-	coverage_files = list.files(dir, pattern="coverage_.*total)\\.txt$", full.names=TRUE, recursive=TRUE)
 	samples = basename(dirname(summary_files))
 
-	all_samples = lapply(seq_along(samples), function(i) qualimap_tables(samples[i], summary_files[i], coverage_files[i]))
+	all_samples = lapply(seq_along(samples), function(i) 
+		            qualimap_tables(samples[i], summary_files[i], groups))
 	ans = lapply(seq_along(all_samples[[1L]]), function(i) rbindlist(lapply(all_samples, `[[`, i)))
 	setattr(ans, 'names', names(all_samples[[1L]]))
 }
@@ -27,22 +30,39 @@ qualimap <- function(dir) {
 #' @seealso \code{\link{root_node}}, \code{\link{child_node}}, \code{\link{html_table}}, \code{\link{qualimap_tables}}, \code{\link{tidy}}, \code{\link{extract_coverage_stats}}, , \code{\link{extract_summary_tables}}, \code{qualimap}
 #' @param sample_name Sample name to be appeneded as a separate column to the summary/coverage tables.
 #' @param html_file Complete path to html file from Qualimap.
-#' @param coverage_file Complete path to coverage stats from Qualimap.
+#' @param groups Default is \code{NULL}. If the plots need to be grouped by samples, then a two 
+#' column \code{data.table} has to be provided with names \code{sample} and \code{group}. The 
+#' column \code{group} should have identical values for all samples belonging to the same group.
 #' @export
 #' @examples 
 #' \dontrun{
 #' exp_tables = qualimap_tables("qualimapReport.html", "coverage_profile_along_genes_(total).txt")
 #' }
-qualimap_tables <- function(sample_name = "", html_file, coverage_file) {
-	add_sample_col <- function(x) {
-		x[, sample_name := sample_name]
-		setcolorder(x, c("sample_name", head(names(x), -1L)))
+qualimap_tables <- function(sample_name = "", html_file, groups=NULL) {
+	add_sample_and_group_cols <- function(x) {
+		x[, sample_name := sample_name
+		][, c("sample_group", "pairs") := split_sample(sample_name)]
+	    if (is.data.table(groups)) {
+      		x[groups, group := factor(i.group), on="sample_group"]
+      	} else {
+      		x[, group := NULL]
+      	}
+      	movecols = c("group", "sample_group", "sample_name", "pairs")
+		setcolorder( x, c( movecols, head(names(x), -length(movecols)) ) )
 	}
 	doc = html_parse(html_file)
 	tables = extract_summary_tables(doc)
-	coverage = extract_coverage_stats(coverage_file)
-	ans = c(tables, `Total coverage` = list(coverage))
-	ans = lapply(ans, add_sample_col)
+	coverage_files = list.files(dirname(html_file), pattern="^coverage_.*", , full.names=TRUE, recursive=TRUE)
+	coverage = lapply(coverage_files, extract_coverage_stats)
+	setattr(coverage, 'names', paste(gsub(".*[(](.*)[)].*$", "\\1", coverage_files), "coverage", sep=" "))
+	ans = c(tables, coverage)
+	if (is.data.table(groups)) {
+  		if (!all(c("sample", "group") %in% names(groups)))
+   			stop("Columns 'sample' and 'group' should be present in argument 'groups'.")
+		groups = copy(groups)[, sample_group := as.character(sample)]
+	}
+	ans = lapply(ans, add_sample_and_group_cols)
+    ans
 }
 
 #' @title Wrapper for parsing HTML content
@@ -90,12 +110,14 @@ tidy <- function(x) {
 	alignment = x[["Reads alignment"]]
 	input     = x[["Input"]]
 
+	setnames(origin, c("Region", "Read %"))
+	origin[, Count := as.integer(gsub(",", "", gsub(" .*$", "\\1", as.character(`Read %`))))]
+	origin[, Region := gsub(":$", "", Region)][, `Read %` := as.numeric(gsub(".*/[ ]*(.*)%$", "\\1", `Read %`))]
+
 	alignment = rbind(alignment, junction[1L])
 	setnames(alignment, c("Type", "Count"))
-	alignment[, Type := gsub(":$", "", Type)][, Count := as.integer(gsub(",", "", as.character(Count)))]
-
-	setnames(origin, c("Region", "Read %"))
-	origin[, Region := gsub(":$", "", Region)][, `Read %` := as.numeric(gsub(".*/[ ]*(.*)%$", "\\1", `Read %`))]
+	alignment[, Type := gsub(":$", "", Type)][, Count := as.numeric(gsub(",", "", as.character(Count)))]
+	alignment[, Percentage := Count/sum(origin$Count)]
 
 	setnames(coverage, c("Position", "Value"))
 	coverage[, Position := gsub(":$", "", Position)][, Value := as.numeric(as.character(Value))]
@@ -139,3 +161,16 @@ child_node <- function(x) {
 extract_coverage_stats <- function(coverage_file) {
 	fread(coverage_file)
 }
+
+split_sample <- function(sample_name) {
+	splits = tstrsplit(sample_name, "_(?=[12]$)", perl=TRUE)
+	if (length(splits) == 1L)
+		splits = c(splits, list(1L))
+	if (length(splits) != 2L)
+		stop("'sample_name' argument should be of the form <samplename>_<pair> for paired end and <samplename> for single end Fastq files, with no '_' elsewhere.")
+	splits[[2]] = as.integer(splits[[2]])
+	splits
+	# x[, c("sample_name", "pairs") := splits]
+	# setcolorder(x, c("sample_name", "pairs", head(names(x), -2L)))
+}
+

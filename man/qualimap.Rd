@@ -4,10 +4,14 @@
 \alias{qualimap}
 \title{Gather all Qualimap summary tables from all samples}
 \usage{
-qualimap(dir)
+qualimap(dir, groups = NULL)
 }
 \arguments{
 \item{dir}{Complete path to Qualimap reports for all samples from an experiment}
+
+\item{groups}{Default is \code{NULL}. If the plots need to be grouped by samples, then a two
+column \code{data.table} has to be provided with names \code{sample} and \code{group}. The
+column \code{group} should have identical values for all samples belonging to the same group.}
 }
 \description{
 This function extracts the \code{Input}, \code{Reads alignment},

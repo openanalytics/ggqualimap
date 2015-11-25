@@ -4,14 +4,16 @@
 \alias{qualimap_tables}
 \title{Extract all summary tables from Qualimap report}
 \usage{
-qualimap_tables(sample_name = "", html_file, coverage_file)
+qualimap_tables(sample_name = "", html_file, groups = NULL)
 }
 \arguments{
 \item{sample_name}{Sample name to be appeneded as a separate column to the summary/coverage tables.}
 
 \item{html_file}{Complete path to html file from Qualimap.}
 
-\item{coverage_file}{Complete path to coverage stats from Qualimap.}
+\item{groups}{Default is \code{NULL}. If the plots need to be grouped by samples, then a two
+column \code{data.table} has to be provided with names \code{sample} and \code{group}. The
+column \code{group} should have identical values for all samples belonging to the same group.}
 }
 \description{
 This function extracts the \code{Input}, \code{Reads alignment},
