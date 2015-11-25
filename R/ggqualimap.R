@@ -3,7 +3,8 @@
 #' @aliases ggqualimap ggqualimap-package
 #' @docType package
 #' @name ggqualimap
+#' @importFrom tools file_ext
 #' @import methods
 #' @import data.table
-#' @import ggplot2
+#' @import XML
 NULL

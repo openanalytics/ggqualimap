@@ -6,11 +6,12 @@ Maintainer: Arunkumar Srinivasan <asrinivasan@openanalytics.eu>
 Depends:
     R (>= 3.1)
 Imports:
+  tools,
   methods,
   data.table (>= 1.9.6),
-  ggplot2
+  XML
 Suggests:
-    roxygen2
+    roxygen2, ggplot2, rbokeh
 Description: Plots of statistics from various summaries created by Qualimap tool.
 License: GPL (>=2)
 lazyData: true
