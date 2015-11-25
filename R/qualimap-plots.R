@@ -9,7 +9,12 @@
 #' @export
 plot_read_alignment <- function(x, type=c("ggplot2", "rbokeh")) {
 
-	dt = data.table:::shallow(x[["Reads alignment"]])[, Type := factor(Type)][]
+	dt = na.omit(x[["Reads alignment"]])[, Type := factor(gsub("Number of ", "", Type))]
+	idx = c(grep("^aligned pairs", dt$Type, ignore.case=TRUE), 
+		    grep("^Total number of ", dt$Type, ignore.case=TRUE), 
+		    grep("secondary align", dt$Type, ignore.case=TRUE))
+	if (length(idx))
+		dt = dt[!(idx)]
 	type = match.arg(type)
 	switch(type, 
 		ggplot2 = {
@@ -81,7 +86,7 @@ plot_bias_profile <- function(x, type=c("ggplot2", "rbokeh")) {
 				stop("Package 'ggplot2' is not available.")
 			pl = ggplot(dt, aes(x=sample_group, y=Value, fill=group)) + 
 				    geom_bar(stat="identity") + theme_bw() + 
-				    facet_wrap(~ Position, ncol=1L) + 
+				    facet_wrap(~ Position, ncol=1L, scales="free_y") + 
 				    theme(axis.text.x=element_text(angle=45, vjust=1), text=element_text(size=20L)) + 
 				    scale_fill_brewer(name="Group", palette="Set1")
 		}, 
@@ -104,16 +109,23 @@ plot_coverage_profile <- function(x, type=c("ggplot2", "rbokeh")) {
 
 	dt = rbindlist(x[grep("coverage$", names(x), value=TRUE)], idcol="Type")
 	dt[, sample_group := factor(sample_group)]
+	dt[, GRP := frank(sample_group, ties.method="dense") %/% 6L, by=.(Type)]
 	type = match.arg(type)
+	# dd.col <- rainbow(length(dt$sample_group))
+	# names(dd.col)  <- dt$sample_group
+
 	switch(type, 
 		ggplot2 = {
 			if (!require(ggplot2))
 				stop("Package 'ggplot2' is not available.")
-			pl = ggplot(dt, aes(x=`#Transcript position`, y=`Transcript coverage profile`)) + 
+			foo <- function(dt) {
+				ggplot(dt, aes(x=`#Transcript position`, y=`Transcript coverage profile`)) + 
 				    geom_line(aes(colour=sample_group)) + theme_bw() + 
 				    theme(axis.text.x=element_text(angle=45, vjust=1), text=element_text(size=20L)) + 
 				    scale_colour_brewer(name="Sample", palette="Set1") + 
-				    facet_wrap(~ Type, ncol=1L, scales="free_y")
+				    facet_wrap(~ Type, ncol=1L, scales="free_y")	
+			}
+			pl = dt[, .(plots=list(foo(.SD))), by=GRP]$plots
 		}, 
 		rboken = {
 			stop("Not yet implemented.")
