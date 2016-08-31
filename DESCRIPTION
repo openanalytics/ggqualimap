@@ -1,17 +1,27 @@
 Package: ggqualimap
 Title: Plots of Statistics Collected by Qualimap from RNASeq Data
-Version: 0.1.0
-Author: Arunkumar Srinivasan <asrinivasan@openanalytics.eu>
+Version: 0.99.0
+Authors@R: c(
+    person("Arunkumar", "Srinivasan", , "asrinivasan@openanalytics.eu", 
+    c("aut", "cre")), person("Open Analytics", role = "cph"))
 Maintainer: Arunkumar Srinivasan <asrinivasan@openanalytics.eu>
 Depends:
-    R (>= 3.1)
+    R (>= 3.3)
 Imports:
   tools,
   methods,
   data.table (>= 1.9.6),
   XML
 Suggests:
-    roxygen2, ggplot2, rbokeh
+    roxygen2,
+    ggplot2,
+    gread,
+    gcount,
+    ganalyse,
+    ggfastqc
 Description: Plots of statistics from various summaries created by Qualimap tool.
-License: GPL (>=2)
+License: GPL-3
 lazyData: true
+RoxygenNote: 5.0.1
+VignetteBuilder: knitr
+biocViews: Sequencing, RNASeq, Software, Visualization
