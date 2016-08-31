@@ -9,30 +9,30 @@
 #' @export
 plot_read_alignment <- function(x, type=c("ggplot2", "rbokeh")) {
 
-	dt = na.omit(x[["Reads alignment"]])[, Type := factor(gsub("Number of ", "", Type))]
-	idx = c(grep("^aligned pairs", dt$Type, ignore.case=TRUE), 
-		    grep("^Total number of ", dt$Type, ignore.case=TRUE), 
-		    grep("secondary align", dt$Type, ignore.case=TRUE))
-	if (length(idx))
-		dt = dt[!(idx)]
-	type = match.arg(type)
-	switch(type, 
-		ggplot2 = {
-			if (!require(ggplot2))
-				stop("Package 'ggplot2' is not available.")
-			pl = ggplot(dt, aes(x=Type, y = Percentage)) + 
-					geom_boxplot(aes(fill = group)) + 
-					facet_wrap(~Type, scales="free") + 
-					theme_bw() + 
-					scale_x_discrete(breaks=NULL) + 
-					theme(axis.text.x=element_text(angle=45, vjust=1), text=element_text(size=20L)) + 
-					scale_fill_brewer(name="Group", palette="Set1") + 
-					xlab("")
-		}, 
-		rboken = {
-			stop("Not yet implemented.")
-		})
-	pl
+    dt = na.omit(x[["Reads alignment"]])[, Type := factor(gsub("Number of ", "", Type))]
+    idx = c(grep("^aligned pairs", dt$Type, ignore.case=TRUE), 
+            grep("^Total number of ", dt$Type, ignore.case=TRUE), 
+            grep("secondary align", dt$Type, ignore.case=TRUE))
+    if (length(idx))
+        dt = dt[!(idx)]
+    type = match.arg(type)
+    switch(type, 
+        ggplot2 = {
+            if (!require(ggplot2))
+                stop("Package 'ggplot2' is not available.")
+            pl = ggplot(dt, aes(x=Type, y = Percentage)) + 
+                    geom_boxplot(aes(fill = group)) + 
+                    facet_wrap(~Type, scales="free") + 
+                    theme_bw() + 
+                    scale_x_discrete(breaks=NULL) + 
+                    theme(axis.text.x=element_text(angle=45, vjust=1), text=element_text(size=20L)) + 
+                    scale_fill_brewer(name="Group", palette="Set1") + 
+                    xlab("")
+        }, 
+        rboken = {
+            stop("Not yet implemented.")
+        })
+    pl
 }
 
 #' @title Plot Qualimap genomic origin
@@ -46,24 +46,24 @@ plot_read_alignment <- function(x, type=c("ggplot2", "rbokeh")) {
 #' @export
 plot_genomic_origin <- function(x, type=c("ggplot2", "rbokeh")) {
 
-	dt = data.table:::shallow(x[["Reads genomic origin"]])
-	dt[, Region := factor(Region)][, sample_name := factor(sample_name)]
-	type = match.arg(type)
-	switch(type, 
-		ggplot2 = {
-			if (!require(ggplot2))
-				stop("Package 'ggplot2' is not available.")
-			pl = ggplot(dt, aes(x=sample_group, y=`Read %`, fill=Region)) + 
-				    geom_bar(stat="identity", position="stack") + 
-				    theme_bw() + 
-				    theme(axis.text.x=element_text(angle=45, vjust=1), text=element_text(size=20L)) + 
-				    scale_fill_brewer(name="Region", palette="Set1") + 
-				    xlab("Sample")
-		}, 
-		rboken = {
-			stop("Not yet implemented.")
-		})
-	pl
+    dt = data.table:::shallow(x[["Reads genomic origin"]])
+    dt[, Region := factor(Region)][, sample_name := factor(sample_name)]
+    type = match.arg(type)
+    switch(type, 
+        ggplot2 = {
+            if (!require(ggplot2))
+                stop("Package 'ggplot2' is not available.")
+            pl = ggplot(dt, aes(x=sample_group, y=`Read %`, fill=Region)) + 
+                    geom_bar(stat="identity", position="stack") + 
+                    theme_bw() + 
+                    theme(axis.text.x=element_text(angle=45, vjust=1), text=element_text(size=20L)) + 
+                    scale_fill_brewer(name="Region", palette="Set1") + 
+                    xlab("Sample")
+        }, 
+        rboken = {
+            stop("Not yet implemented.")
+        })
+    pl
 }
 
 #' @title Plot Qualimap bias profile
@@ -77,23 +77,23 @@ plot_genomic_origin <- function(x, type=c("ggplot2", "rbokeh")) {
 #' @export
 plot_bias_profile <- function(x, type=c("ggplot2", "rbokeh")) {
 
-	dt = data.table:::shallow(x[["Transcript coverage profile"]])
-	dt[, Position := factor(Position)][, sample_group := factor(sample_group)]
-	type = match.arg(type)
-	switch(type, 
-		ggplot2 = {
-			if (!require(ggplot2))
-				stop("Package 'ggplot2' is not available.")
-			pl = ggplot(dt, aes(x=sample_group, y=Value, fill=group)) + 
-				    geom_bar(stat="identity") + theme_bw() + 
-				    facet_wrap(~ Position, ncol=1L, scales="free_y") + 
-				    theme(axis.text.x=element_text(angle=45, vjust=1), text=element_text(size=20L)) + 
-				    scale_fill_brewer(name="Group", palette="Set1")
-		}, 
-		rboken = {
-			stop("Not yet implemented.")
-		})
-	pl	
+    dt = data.table:::shallow(x[["Transcript coverage profile"]])
+    dt[, Position := factor(Position)][, sample_group := factor(sample_group)]
+    type = match.arg(type)
+    switch(type, 
+        ggplot2 = {
+            if (!require(ggplot2))
+                stop("Package 'ggplot2' is not available.")
+            pl = ggplot(dt, aes(x=sample_group, y=Value, fill=group)) + 
+                    geom_bar(stat="identity") + theme_bw() + 
+                    facet_wrap(~ Position, ncol=1L, scales="free_y") + 
+                    theme(axis.text.x=element_text(angle=45, vjust=1), text=element_text(size=20L)) + 
+                    scale_fill_brewer(name="Group", palette="Set1")
+        }, 
+        rboken = {
+            stop("Not yet implemented.")
+        })
+    pl  
 }
 
 #' @title Plot Qualimap coverage profile
@@ -107,30 +107,30 @@ plot_bias_profile <- function(x, type=c("ggplot2", "rbokeh")) {
 #' @export
 plot_coverage_profile <- function(x, type=c("ggplot2", "rbokeh")) {
 
-	dt = rbindlist(x[grep("coverage$", names(x), value=TRUE)], idcol="Type")
-	dt[, sample_group := factor(sample_group)]
-	dt[, GRP := frank(sample_group, ties.method="dense") %/% 6L, by=.(Type)]
-	type = match.arg(type)
-	# dd.col <- rainbow(length(dt$sample_group))
-	# names(dd.col)  <- dt$sample_group
+    dt = rbindlist(x[grep("coverage$", names(x), value=TRUE)], idcol="Type")
+    dt[, sample_group := factor(sample_group)]
+    dt[, GRP := frank(sample_group, ties.method="dense") %/% 6L, by=.(Type)]
+    type = match.arg(type)
+    # dd.col <- rainbow(length(dt$sample_group))
+    # names(dd.col)  <- dt$sample_group
 
-	switch(type, 
-		ggplot2 = {
-			if (!require(ggplot2))
-				stop("Package 'ggplot2' is not available.")
-			foo <- function(dt) {
-				ggplot(dt, aes(x=`#Transcript position`, y=`Transcript coverage profile`)) + 
-				    geom_line(aes(colour=sample_group)) + theme_bw() + 
-				    theme(axis.text.x=element_text(angle=45, vjust=1), text=element_text(size=20L)) + 
-				    scale_colour_brewer(name="Sample", palette="Set1") + 
-				    facet_wrap(~ Type, ncol=1L, scales="free_y")	
-			}
-			pl = dt[, .(plots=list(foo(.SD))), by=GRP]$plots
-		}, 
-		rboken = {
-			stop("Not yet implemented.")
-		})
-	pl
+    switch(type, 
+        ggplot2 = {
+            if (!require(ggplot2))
+                stop("Package 'ggplot2' is not available.")
+            foo <- function(dt) {
+                ggplot(dt, aes(x=`#Transcript position`, y=`Transcript coverage profile`)) + 
+                    geom_line(aes(colour=sample_group)) + theme_bw() + 
+                    theme(axis.text.x=element_text(angle=45, vjust=1), text=element_text(size=20L)) + 
+                    scale_colour_brewer(name="Sample", palette="Set1") + 
+                    facet_wrap(~ Type, ncol=1L, scales="free_y")    
+            }
+            pl = dt[, .(plots=list(foo(.SD))), by=GRP]$plots
+        }, 
+        rboken = {
+            stop("Not yet implemented.")
+        })
+    pl
 }
 
 #' @title Plot Qualimap junction analysis
@@ -144,20 +144,20 @@ plot_coverage_profile <- function(x, type=c("ggplot2", "rbokeh")) {
 #' @export
 plot_junction_analysis <- function(x, type=c("ggplot2", "rbokeh")) {
 
-	dt = data.table:::shallow(x[["Junction analysis"]])
-	dt[, sample_group := factor(sample_group)]
-	type = match.arg(type)
-	switch(type, 
-		ggplot2 = {
-			if (!require(ggplot2))
-				stop("Package 'ggplot2' is not available.")
-			pl = ggplot(dt, aes(x=Junction, y=`Read %`)) + 
-				    geom_bar(stat="identity") + theme_bw() + 
-				    theme(axis.text.x=element_text(angle=45, hjust=1), text=element_text(size=20L)) + 
-				    facet_wrap(group ~ sample_group, ncol=1L)
-		}, 
-		rboken = {
-			stop("Not yet implemented.")
-		})
-	pl	
+    dt = data.table:::shallow(x[["Junction analysis"]])
+    dt[, sample_group := factor(sample_group)]
+    type = match.arg(type)
+    switch(type, 
+        ggplot2 = {
+            if (!require(ggplot2))
+                stop("Package 'ggplot2' is not available.")
+            pl = ggplot(dt, aes(x=Junction, y=`Read %`)) + 
+                    geom_bar(stat="identity") + theme_bw() + 
+                    theme(axis.text.x=element_text(angle=45, hjust=1), text=element_text(size=20L)) + 
+                    facet_wrap(group ~ sample_group, ncol=1L)
+        }, 
+        rboken = {
+            stop("Not yet implemented.")
+        })
+    pl  
 }
