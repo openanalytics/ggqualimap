@@ -1,0 +1,256 @@
+---
+title: "ggqualimap vignette"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_document:
+    theme: spacelab
+    highlight: pygments
+    css : css/bootstrap.css
+vignette: >
+  %\VignetteIndexEntry{ggqualimap vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r, echo = FALSE, message = FALSE}
+require(ggqualimap)
+knitr::opts_chunk$set(
+  comment = "#",
+  error = FALSE,
+  tidy = FALSE,
+  cache = FALSE,
+  collapse=TRUE)
+# options(datatable.auto.index=FALSE)
+```
+
+## ggqualimap package
+
+The `ggqualimap` package allows quick summary plots of 
+[qualimap](http://qualimap.bioinfo.cipf.es/) reports from Next Generation 
+Sequencing data. 
+
+There are five functions for plotting various summary statistics:
+
+* `plot_read_alignment` -- Ratio of reads aligned to various features
+
+* `plot_genomic_origin` -- Percentage of reads mapped to exon/intron/intergenic
+
+* `plot_bias_profile` -- Bias level for 5', 3' and 5'-3'
+
+* `plot_coverage_profile` -- High and low coverage profiles for all samples
+
+* `plot_junction_analysis` -- Percent of reads across different junctions
+
+The function `qualimap()` loads the entire report as an object of class 
+`qualimap` which can be used to generate any additional plots that are 
+required.
+
+***
+
+## Load qualimap report
+
+The `qualimap()` function loads data from qualimap generated reports via the 
+argument `sample_info` which should be a file containing info about samples.
+The file should contain at least these three columns:
+
+* `sample` -- contains the sample name.
+
+* `type` -- one of *"summary"*, *"coverage_high"*, *"coverage_low"* and 
+*"coverage_total"* usually.
+
+    For html files, `type` is *"summary"* and for *"txt"* files, one of the 
+    coverage types mentioned above should be provided.
+
+    **Note that** there may be other types of summary statistic file generated 
+    by `Qualimap`. It is possible to provide a custom type for those files, and 
+    `qualimap()` function would generate the data, but plots are only 
+    implemented for summary tables in the html file and all coverage files. 
+    This means you will have to implement your own functions to plot those 
+    summary statistics.
+
+* `path` -- full path to the qualimap summary report files for each sample. 
+This normally includes the `html` *and* the coverage profile `text` files. See 
+the [sample annotation file](#sample-annotation-file) section for an example 
+of how `sample_info` would look like.
+
+    If just the file name (`.txt`) is provided, it is assumed that the file is 
+    in the same folder as the input file provided to `sample_info` argument.
+
+It can also optionally contain a `group` column. If present, the plots 
+generated will take it into account and *color* / *facet* accordingly.
+
+#### Note: {.bs-callout .bs-callout-warning}
+
+It is recommended to have a *group* column.
+
+### Sample annotation file {#sample-annotation-file}
+
+```{r, echo=TRUE, eval=FALSE}
+path = system.file("tests/qualimap-sample", package="ggqualimap")
+ann_file = file.path(path, "annotation.txt")
+```
+
+```{r, echo=FALSE, eval=TRUE}
+path = "./"
+ann_file = file.path(path, "annotation.txt")
+```
+
+Here's how an annotation file might look like.
+
+```{r}
+data.table::fread(ann_file)
+```
+
+### Using `qualimap()` to load reports
+
+```{r}
+obj = qualimap(ann_file)
+obj
+class(obj)
+```
+
+#### {.bs-callout .bs-callout-info}
+
+* `obj` is an object of class `qualimap`.
+
+* Each element of `value` is itself a *data.table*.
+
+## Read alignment
+
+`plot_read_alignment()` provides a plot of read alignment stats. By 
+default the argument `interactive = TRUE`, in which case it will try to plot a 
+*jitter* plot using the `plotly` package. Jitter plots are possible only when 
+`interactive = TRUE`.
+
+The other types of plot that is possible is `box`. It is only possible when 
+only one `qualimap` object is provided as input. Plots can be interactive or 
+static for `box` type. If static, the function returns a `ggplot2` plot.
+
+### Interative plot using `plotly`
+
+```{r, echo=TRUE, eval=FALSE}
+plot_read_alignment(sample=obj)
+```
+
+```{r, echo=FALSE, eval=TRUE, message=FALSE}
+pl = plot_read_alignment(sample=obj)
+ll = htmltools::tagList()
+ll[[1L]] = plotly::as.widget(pl)
+ll
+```
+
+Note that the facet is automatically named `sample` which was the name 
+provided to the input argument. More than one such `qualimap` object can be 
+provided to a single function to generate facetted plot as shown above, for 
+e.g., `plot_read_alignment(s1 = obj1, s2 = obj2)`.
+
+Using `interactive=FALSE` would result in a static `ggplot2` plot, but it is 
+limited to a maximum of one `qualimap` object.
+
+### Static plot using `ggplot2`
+
+```{r}
+plot_read_alignment(sample=obj, interactive=FALSE, geom="box")
+```
+
+## Sequence duplication percentage
+
+`plot_genomic_origin()` provides a plot of percentage of reads mapped to 
+different genomic regions. The usage is also identical to `plot_genomic_region` 
+except that the possible *geoms* are `"jitter"` and `"bar"`.
+
+### Interative plot using `plotly`
+
+```{r, echo=TRUE, eval=FALSE}
+plot_genomic_origin(sample=obj)
+```
+
+```{r, echo=FALSE, eval=TRUE, message=FALSE}
+pl = plot_genomic_origin(sample=obj)
+ll = htmltools::tagList()
+ll[[1L]] = plotly::as.widget(pl)
+ll
+```
+
+### Static plot using `ggplot2`
+
+```{r}
+plot_genomic_origin(sample=obj, interactive=FALSE, geom="bar")
+```
+
+## Bias profiles
+
+`plot_bias_profile()` provides a bias profiles across `5'`, `3'` and 
+`5'-3'` regions. The usage is also identical to `plot_genomic_origin`.
+
+### Interative plot using `plotly`
+
+```{r, echo=TRUE, eval=FALSE}
+plot_bias_profile(sample=obj)
+```
+
+```{r, echo=FALSE, eval=TRUE, message=FALSE}
+pl = plot_bias_profile(sample=obj)
+ll = htmltools::tagList()
+ll[[1L]] = plotly::as.widget(pl)
+ll
+```
+
+### Static plot using `ggplot2`
+
+```{r}
+plot_bias_profile(sample=obj, interactive=FALSE, geom="bar")
+```
+
+## Coverage profiles
+
+`plot_coverage_profile()` provides a plot of *high*, *low* and *total* 
+coverage profiles. The only geom implemented is `line`. Both interactive 
+and non-interactive plots are possible, as shown below.
+
+### Interative plot using `plotly`
+
+```{r, echo=TRUE, eval=FALSE}
+plot_coverage_profile(sample=obj)
+```
+
+```{r, echo=FALSE, eval=TRUE, message=FALSE}
+pl = plot_coverage_profile(sample=obj)
+ll = htmltools::tagList()
+ll[[1L]] = plotly::as.widget(pl)
+ll
+```
+
+### Static plot using `ggplot2`
+
+```{r}
+plot_coverage_profile(sample=obj, interactive=FALSE)
+```
+
+## Junction analysis
+
+`plot_junction_analysis()` provides a plot of percentage of reads mapped 
+across specific junctions. The only geom implemented is `bar`. Both interactive 
+and non-interactive plots are possible, as shown below.
+
+### Interative plot using `plotly`
+
+```{r, echo=TRUE, eval=FALSE}
+plot_junction_analysis(sample=obj)
+```
+
+```{r, echo=FALSE, eval=TRUE, message=FALSE}
+suppressWarnings(pl <- plot_junction_analysis(sample=obj))
+ll = htmltools::tagList()
+ll[[1L]] = plotly::as.widget(pl)
+ll
+```
+
+### Static plot using `ggplot2`
+
+```{r}
+plot_junction_analysis(sample=obj, interactive=FALSE)
+```
+
+***
+

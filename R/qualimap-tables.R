@@ -194,18 +194,16 @@ tidy.html <- function(x) {
     }
     if (params[5L] %in% names(x)) {
         junc = .subset2(x, params[5L])
-        junc_cnt = data.table(junc_read_count = 
-                    fix_numbers(junc[1, V2]))
+        junc_cnt = data.table(alignment = "at_junction", 
+                                read_count = fix_numbers(junc[1, V2]))
         junc = junc[-1L, ]
         setnames(junc, c("junc_type", "percentage"))
         junc[, "percentage" := fix_percent(percentage)]
     }
-
-    ans = list(input, align, geno, cov, junc, junc_cnt)
-    new_params = c("input", "reads_alignment", "reads_genomic_origin", 
-                    "transcript_coverage_profile", "junction_percentage", 
-                    "junction_read_count")
-    setattr(ans, "names", new_params)
+    align = rbind(align, junc_cnt)
+    align[, "percentage" := read_count / sum(geno[["read_count"]])][]
+    ans = list(input, align, geno, cov, junc)
+    setattr(ans, "names", params)
 }
 
 tidy.txt <- function(x) {

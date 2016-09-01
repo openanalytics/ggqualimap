@@ -1,0 +1,101 @@
+# This file should be clean of non-ASCII characters; e.g. CRAN Solaris
+# Use:  grep --color='auto' -P -n "[\x80-\xFF]" tests.Rraw
+if (!exists("test_ggqualimap", .GlobalEnv, inherits=FALSE)) {
+    require(ggqualimap)   # in dev the package should not be loaded
+    options(warn=0L) # use require() to warn but not halt if not available
+    .devtesting=FALSE
+
+    test = ggqualimap:::test
+} else .devtesting=TRUE
+
+sugg_pkgs = c("data.table", "ggplot2", "XML")
+inst_pkgs = rownames(installed.packages())
+lapply(setNames(sugg_pkgs, nm = sugg_pkgs), function(pkg) if(pkg %in% 
+    inst_pkgs) require(pkg, character.only=TRUE))
+
+INT = function(...) as.integer(c(...))
+
+options(warn=2L)
+nfail = ntest = lastnum = 0L
+whichfail = NULL
+.timingtests = FALSE
+started.at = Sys.time()
+
+## qualimap ----------------------------------------------------
+info = "./qualimap-sample/annotation.txt"
+qualimap_obj = qualimap(info)
+
+test(1.0, class(qualimap_obj)[1L], "qualimap")
+test(1.1, all(sapply(qualimap_obj[["value"]], inherits, "data.table")), TRUE)
+
+## read_alignment ----------------------------------------------
+ggplot2_names = c("data", "panel", "plot")
+plotly_names  = c("x", "width", "height", "sizingPolicy", "dependencies", 
+                    "elementId", "preRenderHook", "jsHooks")
+test(2.1, names(print(plot_read_alignment(Raw=qualimap_obj, interactive=TRUE, 
+        geom="jitter"))), plotly_names)
+test(2.2, names(print(plot_read_alignment(Raw=qualimap_obj, interactive=TRUE, 
+        geom="box"))), plotly_names, warning="applied to")
+test(2.3, names(print(plot_read_alignment(Raw=qualimap_obj, interactive=FALSE, 
+        geom="jitter"))), plotly_names, warning="only interactive plots")
+test(2.4, names(print(plot_read_alignment(Raw=qualimap_obj, interactive=FALSE, 
+        geom="box"))), ggplot2_names)
+test(2.5, names(print(plot_read_alignment(Raw=qualimap_obj, bla=qualimap_obj, 
+     interactive=FALSE, geom="box"))), plotly_names, warning="only possible on")
+
+## genomic_origin ----------------------------------------
+test(3.1, names(print(plot_genomic_origin(Raw=qualimap_obj, interactive=TRUE, 
+        geom="jitter"))), plotly_names)
+test(3.2, names(print(plot_genomic_origin(Raw=qualimap_obj, interactive=TRUE, 
+        geom="bar"))), plotly_names, warning="applied to")
+test(3.3, names(print(plot_genomic_origin(Raw=qualimap_obj, interactive=FALSE, 
+        geom="jitter"))), plotly_names, warning="only interactive plots")
+test(3.4, names(print(plot_genomic_origin(Raw=qualimap_obj, interactive=FALSE, 
+        geom="bar"))), ggplot2_names)
+test(3.5, names(print(plot_genomic_origin(Raw=qualimap_obj, bla=qualimap_obj, 
+     interactive=FALSE, geom="bar"))), plotly_names, warning="only possible on")
+
+## bias_profile -------------------------------------------------
+
+test(4.1, names(print(plot_bias_profile(Raw=qualimap_obj, interactive=TRUE, 
+        geom="jitter"))), plotly_names)
+test(4.2, names(print(plot_bias_profile(Raw=qualimap_obj, interactive=TRUE, 
+        geom="bar"))), plotly_names, warning="applied to")
+test(4.3, names(print(plot_bias_profile(Raw=qualimap_obj, interactive=FALSE, 
+        geom="jitter"))), plotly_names, warning="only interactive plots")
+test(4.4, names(print(plot_bias_profile(Raw=qualimap_obj, interactive=FALSE, 
+        geom="bar"))), ggplot2_names)
+test(4.5, names(print(plot_bias_profile(Raw=qualimap_obj, bla=qualimap_obj, 
+     interactive=FALSE, geom="bar"))), plotly_names, warning="only possible on")
+
+## coverage_profile ---------------------------------
+
+test(5.1, names(print(plot_coverage_profile(Raw=qualimap_obj, interactive=TRUE, 
+        geom="line"))), plotly_names)
+test(5.2, names(print(plot_coverage_profile(Raw=qualimap_obj, interactive=FALSE, 
+        geom="line"))), ggplot2_names)
+
+## junction_stats ---------------------------------
+
+test(6.1, names(print(plot_junction_analysis(Raw=qualimap_obj, interactive=TRUE, 
+        geom="bar"))), plotly_names, warning="applied to")
+test(6.2, names(print(plot_junction_analysis(Raw=qualimap_obj, interactive=FALSE, 
+        geom="bar"))), ggplot2_names)
+
+## test summary ----------------------------------------------
+options(warn=0L)
+plat = paste("endian=",.Platform$endian,", sizeof(long double)==",
+                    .Machine$sizeof.longdouble,sep="")
+if (nfail > 0) {
+    if (nfail>1) {s1="s";s2="s: "} else {s1="";s2=" "}
+    cat("\r")
+    stop(nfail," error",s1," out of ",ntest, " (lastID=",
+        lastnum,", ",plat, ") in inst/tests/tests.Rraw on ",
+        date(),". Search tests.Rraw for test number",s2,
+        paste(whichfail,collapse=", "),".")
+    # important to stop() here, so that 'R CMD check' fails
+}
+cat("\rAll ",ntest," tests (lastID=",lastnum,
+    ") in inst/tests/tests.Rraw completed ok in ",
+    timetaken(started.at)," on ",
+    date()," (",plat,")\n",sep="")

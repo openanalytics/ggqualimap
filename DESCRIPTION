@@ -8,17 +8,19 @@ Maintainer: Arunkumar Srinivasan <asrinivasan@openanalytics.eu>
 Depends:
     R (>= 3.3)
 Imports:
-  tools,
-  methods,
-  data.table (>= 1.9.6),
-  XML
-Suggests:
-    roxygen2,
+    tools,
+    methods,
     ggplot2,
+    data.table (>= 1.9.6),
+    XML
+Suggests:
+    roxygen2, 
+    plotly, 
     gread,
     gcount,
     ganalyse,
-    ggfastqc
+    ggfastqc, 
+    htmltools
 Description: Plots of statistics from various summaries created by Qualimap tool.
 License: GPL-3
 lazyData: true

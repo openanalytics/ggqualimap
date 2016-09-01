@@ -5,6 +5,7 @@
 #' @name ggqualimap
 #' @importFrom tools file_ext
 #' @import methods
+#' @import ggplot2
 #' @import data.table
 #' @import XML
 NULL
