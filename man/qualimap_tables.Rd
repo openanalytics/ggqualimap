@@ -11,9 +11,13 @@ qualimap_tables(file, sample, type, group)
 
 \item{sample}{Sample name.}
 
-\item{group}{Group / condition this sample belongs to.}
+\item{type}{\code{"summary"} or one of \code{"coverage_.*"} values. See 
+\code{vignette} for details.}
 
-\item{pair}{Read pair.}
+\item{group}{Group / condition this sample belongs to.}
+}
+\value{
+A list of data.tables.
 }
 \description{
 \bold{NOTE:} For internal use only.

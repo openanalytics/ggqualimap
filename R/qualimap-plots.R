@@ -20,9 +20,9 @@
 #' @seealso \code{\link{qualimap}} \code{\link{plot_bias_profile}}
 #' \code{\link{plot_coverage_profile}} \code{\link{plot_junction_analysis}}
 #' \code{\link{plot_genomic_origin}}
+#' @return The plot object
 #' @export
 #' @examples
-#' require(ggqualimap)
 #' path = system.file("tests/qualimap-sample", package="ggqualimap")
 #' obj = qualimap(sample_info = file.path(path, "annotation.txt"))
 #' 
@@ -31,6 +31,7 @@
 plot_read_alignment <- function(..., interactive=TRUE, 
             geom=c("jitter", "box")) {
 
+    param=value=percentage=NULL
     geom = match.arg(geom)
     ll = list(...)
     if (length(ll) > 1L && geom == "box") {
@@ -99,23 +100,24 @@ plot_read_alignment <- function(..., interactive=TRUE,
 #' @seealso \code{\link{qualimap}} \code{\link{plot_bias_profile}}
 #' \code{\link{plot_coverage_profile}} \code{\link{plot_junction_analysis}}
 #' \code{\link{plot_read_alignment}}
+#' @return The plot object
 #' @export
 #' @examples
-#' require(ggqualimap)
 #' path = system.file("tests/qualimap-sample", package="ggqualimap")
 #' obj = qualimap(sample_info = file.path(path, "annotation.txt"))
 #' 
 #' # interactive jitter
 #' plot_genomic_origin(sample = obj)
 #' 
-#' interactive bar plot
+#' # interactive bar plot
 #' plot_genomic_origin(sample = obj, geom="bar")
 #' 
-#' non-interactive bar plot
+#' # non-interactive bar plot
 #' plot_genomic_origin(sample = obj, geom="bar", interactive=FALSE)
 plot_genomic_origin <- function(..., interactive=TRUE, 
                             geom=c("jitter", "bar")) {
 
+    param=value=percentage=NULL
     geom = match.arg(geom)
     ll = list(...)
     if (length(ll) > 1L && geom == "bar") {
@@ -183,21 +185,22 @@ plot_genomic_origin <- function(..., interactive=TRUE,
 #' @seealso \code{\link{qualimap}} \code{\link{plot_read_alignment}}
 #' \code{\link{plot_coverage_profile}} \code{\link{plot_junction_analysis}}
 #' \code{\link{plot_genomic_origin}}
+#' @return The plot object
 #' @export
 #' @examples
-#' require(ggqualimap)
 #' path = system.file("tests/qualimap-sample", package="ggqualimap")
 #' obj = qualimap(sample_info = file.path(path, "annotation.txt"))
 #' 
 #' # interactive jitter
 #' plot_bias_profile(sample = obj)
-#' interactive bar plot
+#' # interactive bar plot
 #' plot_bias_profile(sample = obj, geom="bar")
 #' 
-#' non-interactive bar plot
+#' # non-interactive bar plot
 #' plot_bias_profile(sample = obj, geom="bar", interactive=FALSE)
 plot_bias_profile <- function(..., interactive=TRUE, geom=c("jitter", "bar")) {
 
+    param=value=NULL
     geom = match.arg(geom)
     ll = list(...)
     if (length(ll) > 1L && geom == "bar") {
@@ -260,9 +263,9 @@ plot_bias_profile <- function(..., interactive=TRUE, geom=c("jitter", "bar")) {
 #' @seealso \code{\link{qualimap}} \code{\link{plot_read_alignment}}
 #' \code{\link{plot_bias_profile}} \code{\link{plot_junction_analysis}}
 #' \code{\link{plot_genomic_origin}}
+#' @return The plot object
 #' @export
 #' @examples
-#' require(ggqualimap)
 #' path = system.file("tests/qualimap-sample", package="ggqualimap")
 #' obj = qualimap(sample_info = file.path(path, "annotation.txt"))
 #' 
@@ -273,6 +276,7 @@ plot_bias_profile <- function(..., interactive=TRUE, geom=c("jitter", "bar")) {
 #' plot_coverage_profile(sample = obj, interactive=FALSE)
 plot_coverage_profile <- function(..., interactive=TRUE, geom="line") {
 
+    param=value=NULL
     geom = match.arg(geom)
     ll = list(...)
     # if (length(ll) > 1L && !interactive) {
@@ -353,9 +357,9 @@ plot_coverage_profile <- function(..., interactive=TRUE, geom="line") {
 #' @seealso \code{\link{qualimap}} \code{\link{plot_read_alignment}}
 #' \code{\link{plot_bias_profile}} \code{\link{plot_coverage_profile}}
 #' \code{\link{plot_genomic_origin}}
+#' @return The plot object
 #' @export
 #' @examples
-#' require(ggqualimap)
 #' path = system.file("tests/qualimap-sample", package="ggqualimap")
 #' obj = qualimap(sample_info = file.path(path, "annotation.txt"))
 #' 
@@ -366,6 +370,7 @@ plot_coverage_profile <- function(..., interactive=TRUE, geom="line") {
 #' plot_junction_analysis(sample = obj, interactive=FALSE)
 plot_junction_analysis <- function(..., interactive=TRUE, geom="bar") {
 
+    param=value=NULL
     geom = match.arg(geom)
     ll = list(...)
     # if (length(ll) > 1L && !interactive) {

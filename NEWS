@@ -1,0 +1,12 @@
+v0.99.0
+
+## Features
+
+1. Implemented `qualimap()` function that loads qualimap report of all samples 
+as specified in an annotation file.
+
+2. Implemented summary plots for 1. read alignment stats, 2. reads mapped 
+across various genomic regions, 3. bias profiles, 4. coverage profiles and 
+5. junction stats.
+
+## Bugs

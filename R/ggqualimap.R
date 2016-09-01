@@ -4,6 +4,8 @@
 #' @docType package
 #' @name ggqualimap
 #' @importFrom tools file_ext
+#' @importFrom utils packageVersion type.convert head tail capture.output
+#' @importFrom stats reformulate
 #' @import methods
 #' @import ggplot2
 #' @import data.table

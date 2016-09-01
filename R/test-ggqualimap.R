@@ -18,8 +18,9 @@
 #' \code{FALSE} it will return \code{TRUE} if all tests were successful. Error 
 #' otherwise.
 #' @aliases test_ggqualimap
-#' @seealso \code{\link{qualimap}}, \code{\link{plot_gc_stats}} 
-#' \code{\link{plot_dup_stats}}
+#' @seealso \code{\link{qualimap}} \code{\link{plot_read_alignment}} 
+#' \code{\link{plot_bias_profile}} \code{\link{plot_coverage_profile}} 
+#' \code{\link{plot_junction_analysis}} \code{\link{plot_genomic_origin}}
 #' @examples
 #' \dontrun{
 #' ggqualimap:::test_ggqualimap()

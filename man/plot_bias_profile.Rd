@@ -21,6 +21,9 @@ the input contains only one \code{qualimap} object.}
 form \code{sample_name_1 = obj1}, \code{sample_name_2 = obj2}, etc. See 
 \code{examples}. The names will be used as title for facets.}
 }
+\value{
+The plot object
+}
 \description{
 This function plots the bias profiles of samples. If 
 info regarding the \code{group} each \code{sample} belongs to is also 
@@ -28,16 +31,15 @@ available, then the generated plot will take that into account to colour /
 facet accordingly.
 }
 \examples{
-require(ggqualimap)
 path = system.file("tests/qualimap-sample", package="ggqualimap")
 obj = qualimap(sample_info = file.path(path, "annotation.txt"))
 
 # interactive jitter
 plot_bias_profile(sample = obj)
-interactive bar plot
+# interactive bar plot
 plot_bias_profile(sample = obj, geom="bar")
 
-non-interactive bar plot
+# non-interactive bar plot
 plot_bias_profile(sample = obj, geom="bar", interactive=FALSE)
 }
 \seealso{

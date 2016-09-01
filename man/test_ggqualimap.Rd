@@ -38,7 +38,8 @@ ggqualimap:::test_ggqualimap()
 }
 }
 \seealso{
-\code{\link{qualimap}}, \code{\link{plot_gc_stats}} 
-\code{\link{plot_dup_stats}}
+\code{\link{qualimap}} \code{\link{plot_read_alignment}} 
+\code{\link{plot_bias_profile}} \code{\link{plot_coverage_profile}} 
+\code{\link{plot_junction_analysis}} \code{\link{plot_genomic_origin}}
 }
 

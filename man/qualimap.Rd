@@ -10,6 +10,11 @@ qualimap(sample_info)
 \item{sample_info}{Full path to file containing details about 
 \code{samples} and their \code{paths}.}
 }
+\value{
+An object of class \code{qualimap} which inherits from 
+\code{"data.table"}, with two columns: \code{param} and \code{value}, where 
+\code{value} is a list of \code{"data.table"}s.
+}
 \description{
 \code{qualimap} function parses all the summary statistics of 
 reports produced by \code{Qualimap} tool and returns a \code{data.table} 
@@ -50,7 +55,6 @@ generated will take it into account and \code{color} / \code{facet}
 accordingly.
 }
 \examples{
-require(ggqualimap)
 path = system.file("tests/qualimap-sample", package="ggqualimap")
 obj = qualimap(sample_info = file.path(path, "annotation.txt"))
 }

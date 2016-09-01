@@ -40,22 +40,25 @@
 #' generated will take it into account and \code{color} / \code{facet} 
 #' accordingly.
 #' 
+#' @return An object of class \code{qualimap} which inherits from 
+#' \code{"data.table"}, with two columns: \code{param} and \code{value}, where 
+#' \code{value} is a list of \code{"data.table"}s.
 #' @seealso \code{\link{plot_read_alignment}} \code{\link{plot_bias_profile}}
 #' \code{\link{plot_coverage_profile}} \code{\link{plot_junction_analysis}}
 #' \code{\link{plot_genomic_origin}}
 #' @examples
-#' require(ggqualimap)
 #' path = system.file("tests/qualimap-sample", package="ggqualimap")
 #' obj = qualimap(sample_info = file.path(path, "annotation.txt"))
 #' @export
 qualimap <- function(sample_info) {
 
+    group=path=type=NULL
     info = fread(sample_info, colClasses=list(character=c("sample")))
     cols = c("sample", "type", "path")
     rest = setdiff(cols, names(info))
     if (length(rest)) stop("Columns [", paste(rest, collapse=","), 
         "] not found in file provided to argument 'sample_info'.")
-    if (is.null(info[["group"]])) info[, group := ""]
+    if (is.null(info[["group"]])) info[, "group" := ""]
     samples = info[["sample"]]
     # set paths correctly, if necessary
     idx = which(info[["path"]] == basename(info[["path"]]))
@@ -82,9 +85,11 @@ qualimap <- function(sample_info) {
 #' \code{type} and \code{path}, \code{extract_summary_tables} extracts all 
 #' summary statistics and returns them as a list of \code{data.table}s.
 #' 
+#' @return A list of data.tables.
 #' @param file The file corresponding to \emph{that \code{sample}}.
 #' @param sample Sample name.
-#' @param pair  Read pair.
+#' @param type  \code{"summary"} or one of \code{"coverage_.*"} values. See 
+#' \code{vignette} for details.
 #' @param group Group / condition this sample belongs to.
 qualimap_tables <- function(file, sample, type, group) {
 
@@ -144,6 +149,7 @@ tidy.default <- function(x) {
 
 tidy.html <- function(x) {
 
+    param=alignment=read_count=V2=region=percentage=bias=value=NULL
     # spaces to underscores, lower case, remove ":"
     fix_text <- function(x) {
         x = gsub("[ ]+", "_", tolower(x))

@@ -8,7 +8,9 @@ Maintainer: Arunkumar Srinivasan <asrinivasan@openanalytics.eu>
 Depends:
     R (>= 3.3)
 Imports:
+    stats,
     tools,
+    utils, 
     methods,
     ggplot2,
     data.table (>= 1.9.6),
@@ -20,10 +22,10 @@ Suggests:
     gcount,
     ganalyse,
     ggfastqc, 
-    htmltools
+    htmltools, 
+    knitr
 Description: Plots of statistics from various summaries created by Qualimap tool.
 License: GPL-3
-lazyData: true
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr
 biocViews: Sequencing, RNASeq, Software, Visualization
